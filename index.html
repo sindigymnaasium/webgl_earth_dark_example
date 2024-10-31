@@ -3,11 +3,18 @@
   <head>
     <script src="https://www.webglearth.com/v2/api.js"></script>
     <script>
+      var earth;
       function initialize() {
-        var earth = new WE.map('earth_div');
-        WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+        earth = new WE.map('earth_div');
+        WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors'
         }).addTo(earth);
+
+        // Add double-click event listener to zoom in
+        document.getElementById('earth_div').addEventListener('dblclick', function () {
+          // Increase zoom level by 1 on each double-click
+          earth.setZoom(earth.getZoom() + 1);
+        });
       }
     </script>
     <style>
@@ -25,8 +32,8 @@
         background-color: black; /* Set globe div background to black */
       }
     </style>
-    <title>WebGL Earth API: Hello World example</title>
-    <meta name="description" content="This is a basic tutorial for showing a map on a 3D globe. It could be used on web and Android & iOS mobile devices.">
+    <title>WebGL Earth API: Double-click Zoom Example</title>
+    <meta name="description" content="This example adds a double-click to zoom in feature on the WebGL Earth globe.">
   </head>
   <body onload="initialize()">
     <div id="earth_div"></div>
