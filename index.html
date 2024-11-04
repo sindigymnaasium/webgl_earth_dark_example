@@ -7,16 +7,19 @@
       var inactivityTimeout;
       const resetTime = 5000; // Inactivity time in milliseconds (5 seconds)
       let isReset = false; // Track if the map has reset
+      const initialZoomLevel = 1.458539833239952; // Starting zoom level
 
       function initialize() {
-        earth = new WE.map('earth_div');
+        earth = new WE.map('earth_div', {
+          zoom: initialZoomLevel
+        });
         WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors'
         }).addTo(earth);
 
-        // Function to reset zoom level
+        // Function to reset zoom level to the initial value
         function resetZoom() {
-          earth.setZoom(1); // Reset to default zoom level
+          earth.setZoom(initialZoomLevel); // Reset to specified starting zoom level
           isReset = true;   // Mark map as reset
         }
 
