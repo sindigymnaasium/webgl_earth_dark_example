@@ -4,17 +4,33 @@
     <script src="https://www.webglearth.com/v2/api.js"></script>
     <script>
       var earth;
+      var inactivityTimeout;
+      const resetTime = 5000; // Inactivity time in milliseconds (5 seconds)
+
       function initialize() {
         earth = new WE.map('earth_div');
         WE.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors'
         }).addTo(earth);
 
-        // Add double-click event listener to zoom in
-        document.getElementById('earth_div').addEventListener('dblclick', function () {
-          // Increase zoom level by 1 on each double-click
-          earth.setZoom(earth.getZoom() + 1);
-        });
+        // Function to reset zoom level
+        function resetZoom() {
+          earth.setZoom(1); // Reset to default zoom level
+        }
+
+        // Function to reset inactivity timer
+        function resetInactivityTimer() {
+          clearTimeout(inactivityTimeout); // Clear the existing timer
+          inactivityTimeout = setTimeout(resetZoom, resetTime); // Set new timer
+        }
+
+        // Attach event listeners to detect activity
+        document.getElementById('earth_div').addEventListener('mousemove', resetInactivityTimer);
+        document.getElementById('earth_div').addEventListener('click', resetInactivityTimer);
+        document.getElementById('earth_div').addEventListener('wheel', resetInactivityTimer);
+
+        // Start the initial inactivity timer
+        resetInactivityTimer();
       }
     </script>
     <style>
@@ -32,8 +48,8 @@
         background-color: black; /* Set globe div background to black */
       }
     </style>
-    <title>WebGL Earth API: Double-click Zoom Example</title>
-    <meta name="description" content="This example adds a double-click to zoom in feature on the WebGL Earth globe.">
+    <title>WebGL Earth API: Inactivity Reset Example</title>
+    <meta name="description" content="This example resets the zoom level after a period of inactivity on the WebGL Earth globe.">
   </head>
   <body onload="initialize()">
     <div id="earth_div"></div>
