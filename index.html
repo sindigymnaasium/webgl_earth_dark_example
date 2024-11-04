@@ -6,6 +6,7 @@
       var earth;
       var inactivityTimeout;
       const resetTime = 5000; // Inactivity time in milliseconds (5 seconds)
+      let isReset = false; // Track if the map has reset
 
       function initialize() {
         earth = new WE.map('earth_div');
@@ -16,13 +17,25 @@
         // Function to reset zoom level
         function resetZoom() {
           earth.setZoom(1); // Reset to default zoom level
+          isReset = true;   // Mark map as reset
         }
 
-        // Function to reset inactivity timer
+        // Function to reset inactivity timer if activity is detected after reset
         function resetInactivityTimer() {
-          clearTimeout(inactivityTimeout); // Clear the existing timer
-          inactivityTimeout = setTimeout(resetZoom, resetTime); // Set new timer
+          if (isReset) { // Only restart timer if the map has reset
+            isReset = false; // Clear the reset status
+            inactivityTimeout = setTimeout(resetZoom, resetTime); // Start the timer again
+          } else {
+            clearTimeout(inactivityTimeout); // Clear existing timer
+            inactivityTimeout = setTimeout(resetZoom, resetTime); // Start a new timer
+          }
         }
+
+        // Attach double-click event for zoom-in
+        document.getElementById('earth_div').addEventListener('dblclick', function () {
+          earth.setZoom(earth.getZoom() + 1);
+          resetInactivityTimer(); // Restart inactivity timer on double-click
+        });
 
         // Attach event listeners to detect activity
         document.getElementById('earth_div').addEventListener('mousemove', resetInactivityTimer);
@@ -30,7 +43,7 @@
         document.getElementById('earth_div').addEventListener('wheel', resetInactivityTimer);
 
         // Start the initial inactivity timer
-        resetInactivityTimer();
+        inactivityTimeout = setTimeout(resetZoom, resetTime);
       }
     </script>
     <style>
@@ -48,8 +61,8 @@
         background-color: black; /* Set globe div background to black */
       }
     </style>
-    <title>WebGL Earth API: Inactivity Reset Example</title>
-    <meta name="description" content="This example resets the zoom level after a period of inactivity on the WebGL Earth globe.">
+    <title>WebGL Earth API: Inactivity Reset with Double-click Zoom</title>
+    <meta name="description" content="This example adds double-click to zoom in and inactivity-based reset with paused timer on WebGL Earth globe.">
   </head>
   <body onload="initialize()">
     <div id="earth_div"></div>
